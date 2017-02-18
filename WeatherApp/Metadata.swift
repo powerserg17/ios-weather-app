@@ -17,7 +17,7 @@ let API_DAYS = "&cnt="
 let API_KEY = "ca7d49477ff3aa7b3e4f554f168894bd"
 let API_METRIC = "&units=metric"
 
-let WEATHER_URL = "\(BASE_URL)\(API_LAT)44\(API_LON)-79\(API_ID)\(API_KEY)\(API_METRIC)"
-let FORECAST_URL = "\(BASE_FORECAST_URL)\(API_LAT)44\(API_LON)-79\(API_DAYS)10\(API_ID)\(API_KEY)\(API_METRIC)"
+let WEATHER_URL = "\(BASE_URL)\(API_LAT)\(Location.sharedInstance.latitude!)\(API_LON)\(Location.sharedInstance.longitude!)\(API_ID)\(API_KEY)\(API_METRIC)"
+let FORECAST_URL = "\(BASE_FORECAST_URL)\(API_LAT)\(Location.sharedInstance.latitude!)\(API_LON)\(Location.sharedInstance.longitude!)\(API_DAYS)10\(API_ID)\(API_KEY)\(API_METRIC)"
 
 typealias DownloadComplete = () -> ()

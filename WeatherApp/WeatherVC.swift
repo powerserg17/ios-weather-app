@@ -7,9 +7,10 @@
 //
 
 import UIKit
+import CoreLocation
 import Alamofire
 
-class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource, CLLocationManagerDelegate {
     
     
     @IBOutlet weak var dateLabel: UILabel!
@@ -20,6 +21,9 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     
+    let locationManager = CLLocationManager()
+    var location: CLLocation!
+    
     var weather = CurrentWeather()
     var forecast: Forecast!
     var forecasts = [Forecast]()
@@ -27,17 +31,37 @@ class WeatherVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startMonitoringSignificantLocationChanges()
+        
         tableView.delegate = self
         tableView.dataSource = self
         
-        weather.downloadWeatherDetails {
-            //UI to load data
-            self.downloadForecast {
-                self.updateHeader()
-                self.tableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+        locationAuthStatus()
+    }
+    
+    func locationAuthStatus() {
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
+            location = locationManager.location
+            Location.sharedInstance.latitude = location.coordinate.latitude
+            Location.sharedInstance.longitude = location.coordinate.longitude
+            weather.downloadWeatherDetails {
+                //UI to load data
+                self.downloadForecast {
+                    self.updateHeader()
+                    self.tableView.reloadData()
+                }
             }
+        } else {
+            locationManager.requestWhenInUseAuthorization()
+            locationAuthStatus()
         }
-        
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
